@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+    <div class="container">
+        <h1>Super Tic-Tac-Toe</h1>
+        <div class="info">
+            <div class="status">Your turn (X)</div>
+            <div class="instructions">Win small boards to claim cells in the big board!</div>
+            <div class="difficulty-selector">
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty">
+                    <option value="medium">Medium</option>
+                    <option value="hard" selected>Hard</option>
+                    <option value="extreme">Extreme</option>
+                </select>
+            </div>
+        </div>
+        <div class="main-board" id="mainBoard"></div>
+        <button class="reset-btn" id="resetBtn">New Game</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

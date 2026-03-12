@@ -1,0 +1,440 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-gradient-start: #667eea;
+    --bg-gradient-end: #764ba2;
+    --container-bg: #ffffff;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --color-x: #ef4444;
+    --color-o: #3b82f6;
+    --board-bg: #333333;
+    --cell-bg: #f5f5f5;
+    --cell-border: #dddddd;
+    --cell-hover: #e0e0e0;
+    --shadow: rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode {
+    --bg-gradient-start: #000000;
+    --bg-gradient-end: #1a1a1a;
+    --container-bg: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --color-x: #ef4444;
+    --color-o: #3b82f6;
+    --board-bg: #000000;
+    --cell-bg: #2a2a2a;
+    --cell-border: #404040;
+    --cell-hover: #3a3a3a;
+    --shadow: rgba(0, 0, 0, 0.8);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    padding: 1rem;
+    transition: background 0.3s ease;
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: var(--container-bg);
+    box-shadow: 0 4px 15px var(--shadow);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.sun-icon {
+    display: block;
+}
+
+.moon-icon {
+    display: none;
+}
+
+body.dark-mode .sun-icon {
+    display: none;
+}
+
+body.dark-mode .moon-icon {
+    display: block;
+}
+
+.container {
+    text-align: center;
+    background: var(--container-bg);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+h1 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    transition: color 0.3s ease;
+}
+
+.info {
+    margin-bottom: 1.5rem;
+}
+
+.status {
+    font-size: 1.2rem;
+    color: var(--color-x);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.instructions {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.difficulty-selector {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.difficulty-selector label {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.difficulty-selector select {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    border: 2px solid var(--cell-border);
+    border-radius: 0.5rem;
+    background: var(--cell-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.difficulty-selector select:hover {
+    border-color: var(--color-x);
+}
+
+.difficulty-selector select:focus {
+    border-color: var(--color-o);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.main-board {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(3, 200px);
+    gap: 12px;
+    margin: 0 auto 1.5rem;
+    background: var(--board-bg);
+    padding: 12px;
+    border-radius: 1rem;
+    transition: background 0.3s ease;
+}
+
+.mini-board {
+    background: var(--container-bg);
+    border-radius: 0.5rem;
+    padding: 8px;
+    position: relative;
+    aspect-ratio: 1;
+    transition: background 0.3s ease;
+    width: 200px;
+    height: 200px;
+}
+
+.mini-board.won {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 5rem;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.mini-board.won.x {
+    background: linear-gradient(135deg, var(--color-x) 0%, #dc2626 100%);
+    color: white;
+}
+
+.mini-board.won.o {
+    background: linear-gradient(135deg, var(--color-o) 0%, #2563eb 100%);
+    color: white;
+}
+
+.mini-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 4px;
+    height: 100%;
+}
+
+.mini-cell {
+    background: var(--cell-bg);
+    border: 2px solid var(--cell-border);
+    border-radius: 0.3rem;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.mini-cell:hover:not(.taken) {
+    background: var(--cell-hover);
+    transform: scale(1.05);
+}
+
+.mini-cell.taken {
+    cursor: not-allowed;
+}
+
+.mini-cell.x {
+    color: var(--color-x);
+}
+
+.mini-cell.o {
+    color: var(--color-o);
+}
+
+.reset-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.winner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.winner-message {
+    background: white;
+    padding: 3rem;
+    border-radius: 1rem;
+    text-align: center;
+}
+
+.winner-message h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-x);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0.5rem;
+    }
+    
+    .container {
+        padding: 1rem;
+        max-width: 100%;
+    }
+    
+    h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .info {
+        margin-bottom: 1rem;
+    }
+    
+    .status {
+        font-size: 1rem;
+    }
+    
+    .instructions {
+        font-size: 0.8rem;
+    }
+    
+    .difficulty-selector {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    
+    .difficulty-selector label {
+        font-size: 0.85rem;
+    }
+    
+    .difficulty-selector select {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .main-board {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 8px;
+        padding: 8px;
+        max-width: 100%;
+        width: calc(100vw - 2rem);
+    }
+    
+    .mini-board {
+        width: 100%;
+        height: 100%;
+        padding: 4px;
+    }
+    
+    .mini-grid {
+        gap: 3px;
+    }
+    
+    .mini-cell {
+        font-size: 1.2rem;
+    }
+    
+    .mini-board.won {
+        font-size: 2.5rem;
+    }
+    
+    .reset-btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .theme-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.75rem;
+    }
+    
+    h1 {
+        font-size: 1.2rem;
+    }
+    
+    .status {
+        font-size: 0.9rem;
+    }
+    
+    .instructions {
+        font-size: 0.75rem;
+    }
+    
+    .main-board {
+        gap: 6px;
+        padding: 6px;
+        width: calc(100vw - 1.5rem);
+    }
+    
+    .mini-board {
+        padding: 3px;
+    }
+    
+    .mini-grid {
+        gap: 2px;
+    }
+    
+    .mini-cell {
+        font-size: 1rem;
+        border-width: 1px;
+    }
+    
+    .mini-board.won {
+        font-size: 2rem;
+    }
+    
+    .reset-btn {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.85rem;
+    }
+    
+    .theme-toggle {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+}
+
+@media (max-width: 360px) {
+    h1 {
+        font-size: 1.1rem;
+    }
+    
+    .main-board {
+        gap: 5px;
+        padding: 5px;
+        width: calc(100vw - 1rem);
+    }
+    
+    .mini-cell {
+        font-size: 0.9rem;
+    }
+    
+    .mini-board.won {
+        font-size: 1.8rem;
+    }
+}
