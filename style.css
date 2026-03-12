@@ -34,16 +34,19 @@ body.dark-mode {
     --shadow: rgba(0, 0, 0, 0.8);
 }
 
+html {
+    overflow-y: auto;
+}
+
 body {
     font-family: Arial, sans-serif;
     min-height: 100vh;
     background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-    padding: 1rem;
+    padding: 2rem 1rem;
     transition: background 0.3s ease;
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
 
