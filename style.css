@@ -43,6 +43,18 @@ body {
     background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     padding: 1rem;
     transition: background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .theme-toggle {
@@ -95,6 +107,8 @@ body.dark-mode .moon-icon {
     border-radius: 1rem;
     box-shadow: 0 10px 30px var(--shadow);
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 h1 {
