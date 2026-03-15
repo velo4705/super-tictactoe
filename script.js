@@ -12,7 +12,7 @@ let gameState = {
     mainBoard: Array(9).fill(''),
     currentPlayer: HUMAN,
     gameActive: true,
-    difficulty: 'hard'
+    difficulty: 'medium'
 };
 
 const winConditions = [
@@ -187,9 +187,9 @@ function computerMove() {
     
     let bestMove;
     
-    if (gameState.difficulty === 'medium') {
+    if (gameState.difficulty === 'easy') {
         bestMove = findMediumMove(availableBoards);
-    } else if (gameState.difficulty === 'hard') {
+    } else if (gameState.difficulty === 'medium') {
         bestMove = findHardMove(availableBoards);
     } else {
         bestMove = findExtremeMove(availableBoards);
