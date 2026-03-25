@@ -615,6 +615,17 @@ initTheme();
 initGame();
 
 
+// Fetch GitHub star count
+fetch('https://api.github.com/repos/velo4705/super-tictactoe')
+    .then(res => res.json())
+    .then(data => {
+        const count = data.stargazers_count;
+        document.getElementById('starCount').textContent = count;
+    })
+    .catch(() => {
+        document.getElementById('starCount').style.display = 'none';
+    });
+
 // Particle animation
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');

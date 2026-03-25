@@ -272,6 +272,38 @@ h1 {
     box-shadow: 0 4px 12px var(--shadow);
 }
 
+.github-star {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--container-bg);
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 4px 15px var(--shadow);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.github-star:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px var(--shadow);
+}
+
+.star-count {
+    background: var(--cell-bg);
+    border: 1px solid var(--cell-border);
+    padding: 0.1rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+}
+
 .winner-overlay {
     position: fixed;
     top: 0;
