@@ -1,25 +1,269 @@
 const mainBoard = document.getElementById('mainBoard');
 const statusDisplay = document.querySelector('.status');
+const aiThinking = document.getElementById('aiThinking');
 const resetBtn = document.getElementById('resetBtn');
 const themeToggle = document.getElementById('themeToggle');
 const difficultySelect = document.getElementById('difficulty');
 
+// New controls and modals
+const undoBtn = document.getElementById('undoBtn');
+const redoBtn = document.getElementById('redoBtn');
+const rulesToggle = document.getElementById('rulesToggle');
+const rulesOverlay = document.getElementById('rulesOverlay');
+const rulesClose = document.getElementById('rulesClose');
+const rulesGotItBtn = document.getElementById('rulesGotItBtn');
+
 const HUMAN = 'X';
 const COMPUTER = 'O';
+const PLAYER2 = 'O'; // Alias for second human player in Pass‑and‑Play
 
 let gameState = {
     miniBoards: Array(9).fill(null).map(() => Array(9).fill('')),
     mainBoard: Array(9).fill(''),
     currentPlayer: HUMAN,
     gameActive: true,
-    difficulty: 'medium'
+    difficulty: 'medium',
+    mode: 'single', // 'single' or 'pass'
+    lastMove: null
 };
+
+let history = [];
+let redoStack = [];
 
 const winConditions = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
 ];
+
+// HTML5 Web Audio Synthesizer
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function playSound(type) {
+    try {
+        initAudio();
+        if (!audioCtx) return;
+        
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        
+        const now = audioCtx.currentTime;
+        
+        if (type === 'humanMove') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+            
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        } 
+        else if (type === 'computerMove') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(450, now);
+            osc.frequency.exponentialRampToValueAtTime(250, now + 0.15);
+            
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        }
+        else if (type === 'boardWin') {
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                
+                gain.gain.setValueAtTime(0.1, now + idx * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.15);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.08);
+                osc.stop(now + idx * 0.08 + 0.15);
+            });
+        }
+        else if (type === 'gameWin') {
+            const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 1046.50]; // C4, E4, G4, C5, E5, C6
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                
+                gain.gain.setValueAtTime(0.12, now + idx * 0.06);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.4);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.06);
+                osc.stop(now + idx * 0.06 + 0.4);
+            });
+        }
+        else if (type === 'gameLose') {
+            const notes = [392.00, 349.23, 311.13, 261.63]; // G4, F4, Eb4, C4
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                
+                gain.gain.setValueAtTime(0.08, now + idx * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.25);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.12);
+                osc.stop(now + idx * 0.12 + 0.25);
+            });
+        }
+        else if (type === 'click') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, now);
+            
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.03);
+        }
+    } catch (e) {
+        console.warn('Audio failed to play', e);
+    }
+}
+
+// Action History State Managers
+function saveState() {
+    history.push(JSON.parse(JSON.stringify(gameState)));
+    redoStack = [];
+    updateUndoRedoButtons();
+}
+
+function updateUndoRedoButtons() {
+    const isHumanTurnOrOver = gameState.currentPlayer === HUMAN || !gameState.gameActive;
+    undoBtn.disabled = history.length === 0 || !isHumanTurnOrOver;
+    redoBtn.disabled = redoStack.length === 0 || !isHumanTurnOrOver;
+}
+
+function undo() {
+    if (history.length === 0) return;
+    playSound('click');
+    redoStack.push(JSON.parse(JSON.stringify(gameState)));
+    gameState = history.pop();
+    updateUndoRedoButtons();
+    renderBoard();
+}
+
+function redo() {
+    if (redoStack.length === 0) return;
+    playSound('click');
+    history.push(JSON.parse(JSON.stringify(gameState)));
+    gameState = redoStack.pop();
+    updateUndoRedoButtons();
+    renderBoard();
+}
+
+// Global Board Renderer & Sync System
+function renderBoard() {
+    mainBoard.innerHTML = '';
+    
+    for (let i = 0; i < 9; i++) {
+        const miniBoard = document.createElement('div');
+        miniBoard.className = 'mini-board';
+        miniBoard.dataset.boardIndex = i;
+        
+        const winner = gameState.mainBoard[i];
+        if (winner) {
+            miniBoard.innerHTML = winner;
+            miniBoard.classList.add('won', winner.toLowerCase());
+        } else {
+            const miniGrid = document.createElement('div');
+            miniGrid.className = 'mini-grid';
+            
+            for (let j = 0; j < 9; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'mini-cell';
+                cell.dataset.boardIndex = i;
+                cell.dataset.cellIndex = j;
+                
+                const cellVal = gameState.miniBoards[i][j];
+                if (cellVal) {
+                    cell.textContent = cellVal;
+                    cell.classList.add('taken', cellVal.toLowerCase());
+                }
+                
+                cell.addEventListener('click', handleCellClick);
+                miniGrid.appendChild(cell);
+            }
+            miniBoard.appendChild(miniGrid);
+        }
+        mainBoard.appendChild(miniBoard);
+    }
+    
+    highlightLastMove();
+    
+    if (gameState.gameActive) {
+        if (gameState.currentPlayer === HUMAN) {
+            statusDisplay.textContent = 'Your turn (X)';
+        } else if (gameState.mode === 'pass' && gameState.currentPlayer === PLAYER2) {
+            statusDisplay.textContent = "Player 2's turn (O)";
+        } else {
+            statusDisplay.textContent = 'Computer thinking...';
+            statusDisplay.style.color = 'var(--color-o)';
+        }
+        statusDisplay.style.fontSize = '';
+    } else {
+        const gameWinner = checkGameWinnerNoSideEffects();
+        if (gameWinner === 'draw') {
+            statusDisplay.textContent = "It's a Draw!";
+            statusDisplay.style.color = 'var(--text-secondary)';
+            statusDisplay.style.fontSize = '1.5rem';
+        } else if (gameWinner) {
+            statusDisplay.textContent = gameWinner === HUMAN ? 'You Win!' : 'Computer Wins!';
+            statusDisplay.style.color = '';
+            statusDisplay.style.fontSize = '1.5rem';
+        }
+    }
+}
+
+function checkGameWinnerNoSideEffects() {
+    for (let condition of winConditions) {
+        const [a, b, c] = condition;
+        if (gameState.mainBoard[a] && 
+            gameState.mainBoard[a] === gameState.mainBoard[b] && 
+            gameState.mainBoard[a] === gameState.mainBoard[c]) {
+            return gameState.mainBoard[a];
+        }
+    }
+    if (!gameState.mainBoard.includes('')) {
+        return 'draw';
+    }
+    return null;
+}
 
 function initGame() {
     mainBoard.innerHTML = '';
@@ -28,37 +272,26 @@ function initGame() {
         mainBoard: Array(9).fill(''),
         currentPlayer: HUMAN,
         gameActive: true,
-        difficulty: difficultySelect.value
+        difficulty: difficultySelect.value,
+        lastMove: null,
+        mode: gameState.mode
     };
     
-    for (let i = 0; i < 9; i++) {
-        const miniBoard = document.createElement('div');
-        miniBoard.className = 'mini-board';
-        miniBoard.dataset.boardIndex = i;
-        
-        const miniGrid = document.createElement('div');
-        miniGrid.className = 'mini-grid';
-        
-        for (let j = 0; j < 9; j++) {
-            const cell = document.createElement('div');
-            cell.className = 'mini-cell';
-            cell.dataset.boardIndex = i;
-            cell.dataset.cellIndex = j;
-            cell.addEventListener('click', handleCellClick);
-            miniGrid.appendChild(cell);
-        }
-        
-        miniBoard.appendChild(miniGrid);
-        mainBoard.appendChild(miniBoard);
+    history = [];
+    redoStack = [];
+    updateUndoRedoButtons();
+    
+    const existingOverlay = document.querySelector('.winner-overlay');
+    if (existingOverlay) {
+        existingOverlay.remove();
     }
     
-    statusDisplay.textContent = 'Your turn (X)';
-    statusDisplay.style.fontSize = '';
-    statusDisplay.style.color = '';
+    renderBoard();
 }
 
 function handleCellClick(e) {
-    if (!gameState.gameActive || gameState.currentPlayer !== HUMAN) return;
+    if (!gameState.gameActive) return;
+    if (gameState.mode === 'single' && gameState.currentPlayer !== HUMAN) return;
     
     const boardIndex = parseInt(e.target.dataset.boardIndex);
     const cellIndex = parseInt(e.target.dataset.cellIndex);
@@ -68,9 +301,10 @@ function handleCellClick(e) {
         return;
     }
     
-    makeMove(boardIndex, cellIndex, HUMAN);
+    saveState();
+    makeMove(boardIndex, cellIndex, gameState.currentPlayer);
     
-    if (gameState.gameActive && gameState.currentPlayer === COMPUTER) {
+    if (gameState.mode === 'single' && gameState.gameActive && gameState.currentPlayer === COMPUTER) {
         statusDisplay.textContent = 'Computer thinking...';
         statusDisplay.style.color = 'var(--color-o)';
         setTimeout(computerMove, 500);
@@ -79,32 +313,78 @@ function handleCellClick(e) {
 
 function makeMove(boardIndex, cellIndex, player) {
     gameState.miniBoards[boardIndex][cellIndex] = player;
-    updateCell(boardIndex, cellIndex, player);
+    gameState.lastMove = { boardIndex, cellIndex, player };
     
-    const winner = checkMiniBoardWinner(boardIndex);
-    if (winner) {
-        gameState.mainBoard[boardIndex] = winner;
-        updateMiniBoardDisplay(boardIndex, winner);
-        checkGameWinner();
+    updateCell(boardIndex, cellIndex, player);
+    playSound(player === HUMAN ? 'humanMove' : 'computerMove');
+    
+    const winCondition = checkMiniBoardWinCondition(boardIndex);
+    if (winCondition) {
+        gameState.mainBoard[boardIndex] = player;
+        
+        const miniBoard = document.querySelector(`[data-board-index="${boardIndex}"]`);
+        if (miniBoard) miniBoard.style.pointerEvents = 'none';
+        
+        drawMiniWinningLine(boardIndex, winCondition, player);
+        playSound('boardWin');
+        
+        setTimeout(() => {
+            updateMiniBoardDisplay(boardIndex, player);
+            
+            if (gameState.gameActive) {
+                gameState.currentPlayer = player === HUMAN ? (gameState.mode === 'single' ? COMPUTER : PLAYER2) : HUMAN;
+                renderBoard();
+                updateUndoRedoButtons();
+            }
+            
+            checkGameWinner();
+            
+            if (gameState.mode === 'single' && gameState.gameActive && gameState.currentPlayer === COMPUTER) {
+                statusDisplay.textContent = 'Computer thinking...';
+                statusDisplay.style.color = 'var(--color-o)';
+                setTimeout(computerMove, 500);
+            }
+        }, 800);
     } else if (isMiniBoardFull(boardIndex)) {
         resetMiniBoard(boardIndex);
-    }
-    
-    if (gameState.gameActive) {
-        gameState.currentPlayer = player === HUMAN ? COMPUTER : HUMAN;
-        if (gameState.currentPlayer === HUMAN) {
-            statusDisplay.textContent = 'Your turn (X)';
-            statusDisplay.style.color = '';
-        }
+        gameState.currentPlayer = player === HUMAN ? (gameState.mode === 'single' ? COMPUTER : PLAYER2) : HUMAN;
+        renderBoard();
+        updateUndoRedoButtons();
+    } else {
+        gameState.currentPlayer = player === HUMAN ? (gameState.mode === 'single' ? COMPUTER : PLAYER2) : HUMAN;
+        renderBoard();
+        updateUndoRedoButtons();
     }
 }
 
 function updateCell(boardIndex, cellIndex, player) {
     const miniBoard = document.querySelector(`[data-board-index="${boardIndex}"]`);
+    if (!miniBoard) return;
     const cells = miniBoard.querySelectorAll('.mini-cell');
+    if (!cells || !cells[cellIndex]) return;
     const cell = cells[cellIndex];
     cell.textContent = player;
     cell.classList.add('taken', player.toLowerCase());
+    highlightLastMove();
+}
+
+function highlightLastMove() {
+    document.querySelectorAll('.mini-cell.last-move').forEach(el => {
+        el.classList.remove('last-move');
+    });
+    
+    if (gameState.lastMove) {
+        const { boardIndex, cellIndex } = gameState.lastMove;
+        if (gameState.mainBoard[boardIndex] === '') {
+            const miniBoard = document.querySelector(`[data-board-index="${boardIndex}"]`);
+            if (miniBoard) {
+                const cells = miniBoard.querySelectorAll('.mini-cell');
+                if (cells && cells[cellIndex]) {
+                    cells[cellIndex].classList.add('last-move');
+                }
+            }
+        }
+    }
 }
 
 function checkMiniBoardWinner(boardIndex) {
@@ -119,6 +399,18 @@ function checkMiniBoardWinner(boardIndex) {
     return null;
 }
 
+function checkMiniBoardWinCondition(boardIndex) {
+    const board = gameState.miniBoards[boardIndex];
+    
+    for (let condition of winConditions) {
+        const [a, b, c] = condition;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            return condition;
+        }
+    }
+    return null;
+}
+
 function isMiniBoardFull(boardIndex) {
     return !gameState.miniBoards[boardIndex].includes('');
 }
@@ -126,6 +418,7 @@ function isMiniBoardFull(boardIndex) {
 function resetMiniBoard(boardIndex) {
     gameState.miniBoards[boardIndex] = Array(9).fill('');
     const miniBoard = document.querySelector(`[data-board-index="${boardIndex}"]`);
+    if (!miniBoard) return;
     const cells = miniBoard.querySelectorAll('.mini-cell');
     cells.forEach(cell => {
         cell.textContent = '';
@@ -135,8 +428,113 @@ function resetMiniBoard(boardIndex) {
 
 function updateMiniBoardDisplay(boardIndex, winner) {
     const miniBoard = document.querySelector(`[data-board-index="${boardIndex}"]`);
+    if (!miniBoard) return;
     miniBoard.innerHTML = winner;
     miniBoard.classList.add('won', winner.toLowerCase());
+}
+
+// SVG Winning Line Drawer Elements
+function drawMiniWinningLine(boardIndex, condition, player) {
+    const miniBoard = document.querySelector(`[data-board-index="${boardIndex}"]`);
+    if (!miniBoard) return;
+    
+    const cells = Array.from(miniBoard.querySelectorAll('.mini-cell'));
+    const startCell = cells[condition[0]];
+    const endCell = cells[condition[2]];
+    
+    if (!startCell || !endCell) return;
+    
+    const miniBoardRect = miniBoard.getBoundingClientRect();
+    const startRect = startCell.getBoundingClientRect();
+    const endRect = endCell.getBoundingClientRect();
+    
+    const x1 = startRect.left - miniBoardRect.left + startRect.width / 2;
+    const y1 = startRect.top - miniBoardRect.top + startRect.height / 2;
+    const x2 = endRect.left - miniBoardRect.left + endRect.width / 2;
+    const y2 = endRect.top - miniBoardRect.top + endRect.height / 2;
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'winning-line-svg');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.pointerEvents = 'none';
+    
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    
+    const color = player === HUMAN ? 'var(--color-x)' : 'var(--color-o)';
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', '6');
+    line.setAttribute('stroke-linecap', 'round');
+    
+    const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+    line.style.strokeDasharray = length;
+    line.style.strokeDashoffset = length;
+    line.style.transition = 'stroke-dashoffset 0.4s ease-in-out';
+    
+    svg.appendChild(line);
+    miniBoard.appendChild(svg);
+    
+    setTimeout(() => {
+        line.style.strokeDashoffset = '0';
+    }, 50);
+}
+
+function drawWinningLine(condition) {
+    const mainBoardRect = mainBoard.getBoundingClientRect();
+    const boards = Array.from(mainBoard.children);
+    const startBoard = boards[condition[0]];
+    const endBoard = boards[condition[2]];
+    
+    if (!startBoard || !endBoard) return;
+    
+    const startRect = startBoard.getBoundingClientRect();
+    const endRect = endBoard.getBoundingClientRect();
+    
+    const x1 = startRect.left - mainBoardRect.left + startRect.width / 2;
+    const y1 = startRect.top - mainBoardRect.top + startRect.height / 2;
+    const x2 = endRect.left - mainBoardRect.left + endRect.width / 2;
+    const y2 = endRect.top - mainBoardRect.top + endRect.height / 2;
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'winning-line-svg');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.pointerEvents = 'none';
+    svg.style.zIndex = '10';
+    
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    
+    const winner = gameState.mainBoard[condition[0]];
+    const color = winner === HUMAN ? 'var(--color-x)' : 'var(--color-o)';
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', '10');
+    line.setAttribute('stroke-linecap', 'round');
+    
+    const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+    line.style.strokeDasharray = length;
+    line.style.strokeDashoffset = length;
+    line.style.transition = 'stroke-dashoffset 0.6s ease-in-out';
+    
+    svg.appendChild(line);
+    mainBoard.appendChild(svg);
+    
+    setTimeout(() => {
+        line.style.strokeDashoffset = '0';
+    }, 50);
 }
 
 function checkGameWinner() {
@@ -147,12 +545,16 @@ function checkGameWinner() {
             gameState.mainBoard[a] === gameState.mainBoard[c]) {
             gameState.gameActive = false;
             const winner = gameState.mainBoard[a];
-            showWinner(winner);
+            
+            drawWinningLine(condition);
+            
+            setTimeout(() => {
+                showWinner(winner);
+            }, 1000);
             return;
         }
     }
     
-    // Check for draw - all main board positions filled
     const isBoardFull = !gameState.mainBoard.includes('');
     if (isBoardFull) {
         gameState.gameActive = false;
@@ -161,20 +563,74 @@ function checkGameWinner() {
 }
 
 function showWinner(winner) {
-    const message = winner === HUMAN ? 'You Win!' : 'Computer Wins!';
+    const message = winner === HUMAN ? 'You Win!' : (gameState.mode === 'pass' ? 'Player 2 Wins!' : 'Computer Wins!');
     statusDisplay.textContent = message;
     statusDisplay.style.fontSize = '1.5rem';
-    statusDisplay.style.color = '';
+    playSound(winner === HUMAN ? 'gameWin' : 'gameLose');
+    aiThinking.classList.remove('visible');
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'winner-overlay';
+    
+    const box = document.createElement('div');
+    box.className = 'winner-message';
+    
+    const title = document.createElement('h2');
+    title.textContent = message;
+    title.style.color = winner === HUMAN ? 'var(--color-x)' : 'var(--color-o)';
+    
+    const playAgainBtn = document.createElement('button');
+    playAgainBtn.className = 'reset-btn';
+    playAgainBtn.textContent = 'Play Again';
+    playAgainBtn.addEventListener('click', () => {
+        playSound('click');
+        overlay.remove();
+        initGame();
+    });
+    
+    box.appendChild(title);
+    box.appendChild(playAgainBtn);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
 }
 
 function showDraw() {
     statusDisplay.textContent = "It's a Draw!";
     statusDisplay.style.fontSize = '1.5rem';
     statusDisplay.style.color = 'var(--text-secondary)';
+    playSound('gameLose');
+    aiThinking.classList.remove('visible');
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'winner-overlay';
+    
+    const box = document.createElement('div');
+    box.className = 'winner-message';
+    
+    const title = document.createElement('h2');
+    title.textContent = "It's a Draw!";
+    title.style.color = 'var(--text-secondary)';
+    
+    const playAgainBtn = document.createElement('button');
+    playAgainBtn.className = 'reset-btn';
+    playAgainBtn.textContent = 'Play Again';
+    playAgainBtn.addEventListener('click', () => {
+        playSound('click');
+        overlay.remove();
+        initGame();
+    });
+    
+    box.appendChild(title);
+    box.appendChild(playAgainBtn);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
 }
 
 function computerMove() {
+    if (gameState.mode !== 'single') return;
     if (!gameState.gameActive) return;
+    
+    aiThinking.classList.add('visible');
     
     const availableBoards = [];
     for (let i = 0; i < 9; i++) {
@@ -198,6 +654,8 @@ function computerMove() {
     if (bestMove) {
         makeMove(bestMove.boardIndex, bestMove.cellIndex, COMPUTER);
     }
+    
+    aiThinking.classList.remove('visible');
 }
 
 // Medium: Random moves (formerly Easy)
@@ -574,46 +1032,162 @@ function checkWinner(board) {
 
 function findWinningMove(boardIndex, player) {
     const board = gameState.miniBoards[boardIndex];
-    
     for (let condition of winConditions) {
         const [a, b, c] = condition;
         const values = [board[a], board[b], board[c]];
         const playerCount = values.filter(v => v === player).length;
         const emptyCount = values.filter(v => v === '').length;
-        
         if (playerCount === 2 && emptyCount === 1) {
             if (board[a] === '') return a;
             if (board[b] === '') return b;
             if (board[c] === '') return c;
         }
     }
-    
     return null;
 }
 
-// Dark mode toggle functionality
+// Theme handling
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const themeDropdown = document.getElementById('themeDropdown');
+const themeOptions = document.querySelectorAll('.theme-opt');
+const lightModeBtn = document.getElementById('lightModeBtn');
+const darkModeBtn = document.getElementById('darkModeBtn');
+
+// Initialize saved theme and dark mode
 function initTheme() {
+    // Apply saved theme or default to Night (dark)
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
+    if (savedTheme) {
+        document.body.classList.add(`theme-${savedTheme}`);
+    } else {
+        // Default to night theme (dark)
+        document.body.classList.add('theme-night');
+        localStorage.setItem('theme', 'night');
+    }
+    // Apply saved dark mode state
+    const savedDark = localStorage.getItem('dark-mode');
+    if (savedDark === 'true') {
         document.body.classList.add('dark-mode');
     }
 }
 
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+function setTheme(theme) {
+    // Remove any existing theme classes
+    document.body.classList.forEach(cls => {
+        if (cls.startsWith('theme-')) {
+            document.body.classList.remove(cls);
+        }
+    });
+    document.body.classList.add(`theme-${theme}`);
+    localStorage.setItem('theme', theme);
+    // Close dropdown after selection
+    themeDropdown.classList.remove('active');
 }
 
-themeToggle.addEventListener('click', toggleTheme);
-resetBtn.addEventListener('click', initGame);
-difficultySelect.addEventListener('change', () => {
-    gameState.difficulty = difficultySelect.value;
+function setLightMode() {
+    document.body.classList.remove('dark-mode');
+    localStorage.setItem('dark-mode', 'false');
+}
+
+function setDarkMode() {
+    document.body.classList.add('dark-mode');
+    localStorage.setItem('dark-mode', 'true');
+}
+
+// Theme toggle button (dropdown visibility)
+themeToggleBtn.addEventListener('click', () => {
+    playSound('click');
+    themeDropdown.classList.toggle('active');
 });
 
-initTheme();
-initGame();
+// Theme option click handlers
+themeOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        playSound('click');
+        const theme = option.dataset.theme;
+        setTheme(theme);
+        themeDropdown.classList.remove('active');
+    });
+});
 
+// Light/Dark mode button handlers
+lightModeBtn.addEventListener('click', () => {
+    playSound('click');
+    setLightMode();
+    themeDropdown.classList.remove('active');
+});
+
+darkModeBtn.addEventListener('click', () => {
+    playSound('click');
+    setDarkMode();
+    themeDropdown.classList.remove('active');
+});
+
+// Click-away: close theme dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (!themeDropdown.contains(e.target) && e.target !== themeToggleBtn) {
+        themeDropdown.classList.remove('active');
+    }
+});
+
+// Existing listeners for reset, difficulty, undo/redo remain unchanged
+resetBtn.addEventListener('click', () => {
+    playSound('click');
+    initGame();
+});
+
+difficultySelect.addEventListener('change', () => {
+    playSound('click');
+    gameState.difficulty = difficultySelect.value;
+    initGame();
+});
+
+// Pass‑and‑Play mode toggle button
+const modeToggle = document.getElementById('modeToggle');
+modeToggle.addEventListener('click', () => {
+    playSound('click');
+    gameState.mode = (gameState.mode === 'single') ? 'pass' : 'single';
+    localStorage.setItem('mode', gameState.mode);
+    updateModeToggleLabel();
+    initGame();
+});
+
+function updateModeToggleLabel() {
+    modeToggle.textContent = gameState.mode === 'single' ? 'Pass‑and‑Play' : 'Single Player';
+    difficultySelect.disabled = (gameState.mode === 'pass');
+}
+
+undoBtn.addEventListener('click', undo);
+redoBtn.addEventListener('click', redo);
+
+// Rules Modal Events
+rulesToggle.addEventListener('click', () => {
+    playSound('click');
+    rulesOverlay.classList.add('active');
+});
+
+const closeRules = () => {
+    playSound('click');
+    rulesOverlay.classList.remove('active');
+};
+
+rulesClose.addEventListener('click', closeRules);
+rulesGotItBtn.addEventListener('click', closeRules);
+
+rulesOverlay.addEventListener('click', (e) => {
+    if (e.target === rulesOverlay) {
+        closeRules();
+    }
+});
+
+// Initialize theme and game
+initTheme();
+
+// Load mode from storage (default single)
+const savedMode = localStorage.getItem('mode') || 'single';
+gameState = { mode: savedMode };
+updateModeToggleLabel();
+initGame();
 
 // Fetch GitHub star count
 fetch('https://api.github.com/repos/velo4705/super-tictactoe')
@@ -658,7 +1232,8 @@ class Particle {
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        const particleColor = getComputedStyle(document.body).getPropertyValue('--particle-color').trim();
+        ctx.fillStyle = `rgba(${particleColor}, 0.5)`;
         ctx.fill();
     }
 }

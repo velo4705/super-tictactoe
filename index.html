@@ -9,14 +9,26 @@
 </head>
 <body>
     <canvas id="particles"></canvas>
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <span class="sun-icon">☀️</span>
-        <span class="moon-icon">🌙</span>
-    </button>
+    <button class="rules-toggle" id="rulesToggle" aria-label="Show game rules">❓</button>
+    <div class="theme-menu-container">
+        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Choose theme">🎨</button>
+        <div class="theme-dropdown" id="themeDropdown">
+            <button class="theme-opt" data-theme="classic">🟣 Classic Amethyst</button>
+            <button class="theme-opt" data-theme="cyberpunk">👾 Cyberpunk Neon</button>
+            <button class="theme-opt" data-theme="ocean">🌊 Deep Ocean</button>
+            <button class="theme-opt" data-theme="gold">👑 Royal Gold</button>
+            <hr class="theme-divider">
+            <button class="theme-opt" id="lightModeBtn">☀️ Light Mode</button>
+            <button class="theme-opt" id="darkModeBtn">🌙 Dark Mode</button>
+        </div>
+    </div>
     <div class="container">
         <h1>Super Tic-Tac-Toe</h1>
         <div class="info">
-            <div class="status">Your turn (X)</div>
+            <div class="status-container">
+                <div class="status">Your turn (X)</div>
+                <div class="ai-thinking" id="aiThinking">🤖 Thinking...</div>
+            </div>
             <div class="instructions">Win small boards to claim cells in the big board!</div>
             <div class="difficulty-selector">
                 <label for="difficulty">Difficulty:</label>
@@ -28,8 +40,53 @@
             </div>
         </div>
         <div class="main-board" id="mainBoard"></div>
-        <button class="reset-btn" id="resetBtn">New Game</button>
+        <div class="controls">
+            <button class="reset-btn" id="resetBtn">New Game</button>
+            <button class="control-btn" id="undoBtn" disabled>Undo</button>
+            <button class="control-btn" id="redoBtn" disabled>Redo</button>
+            <button class="control-btn" id="modeToggle">Pass-and-Play</button>
+        </div>
     </div>
+
+    <!-- Rules Modal Overlay -->
+    <div class="rules-overlay" id="rulesOverlay">
+        <div class="rules-content">
+            <button class="rules-close" id="rulesClose" aria-label="Close rules">&times;</button>
+            <h2>How to Play Super Tic-Tac-Toe</h2>
+            <div class="rules-body">
+                <div class="rule-step">
+                    <div class="rule-icon">🧩</div>
+                    <div class="rule-text">
+                        <h3>The Board</h3>
+                        <p>The game consists of a large 3x3 main board, where each cell contains a smaller 3x3 mini-board.</p>
+                    </div>
+                </div>
+                <div class="rule-step">
+                    <div class="rule-icon">🎯</div>
+                    <div class="rule-text">
+                        <h3>Objective</h3>
+                        <p>To win, you must win three mini-boards in a row (horizontally, vertically, or diagonally) on the main board.</p>
+                    </div>
+                </div>
+                <div class="rule-step">
+                    <div class="rule-icon">⚔️</div>
+                    <div class="rule-text">
+                        <h3>Mini-Boards</h3>
+                        <p>Play in any cell that is not already won or full. Win a mini-board by getting three marks in a row within its grid.</p>
+                    </div>
+                </div>
+                <div class="rule-step">
+                    <div class="rule-icon">🧠</div>
+                    <div class="rule-text">
+                        <h3>Strategy</h3>
+                        <p>Placing a mark claims that spot on the mini-board. Try to build lines on the main board while blocking the computer's tactics!</p>
+                    </div>
+                </div>
+            </div>
+            <button class="reset-btn" id="rulesGotItBtn" style="margin-top: 1.5rem; width: 100%;">Got It!</button>
+        </div>
+    </div>
+
     <a class="github-star" href="https://github.com/velo4705/super-tictactoe" target="_blank" rel="noopener noreferrer">
         ⭐ Star on GitHub <span class="star-count" id="starCount"></span>
     </a>

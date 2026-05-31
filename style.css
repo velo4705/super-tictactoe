@@ -17,21 +17,182 @@
     --cell-border: #dddddd;
     --cell-hover: #e0e0e0;
     --shadow: rgba(0, 0, 0, 0.3);
+    --particle-color: 255, 255, 255;
 }
 
-body.dark-mode {
-    --bg-gradient-start: #000000;
-    --bg-gradient-end: #1a1a1a;
-    --container-bg: #1a1a1a;
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
+/* CLASSIC THEME */
+body.theme-classic {
+    --bg-gradient-start: #667eea;
+    --bg-gradient-end: #764ba2;
+    --container-bg: #ffffff;
+    --text-primary: #333333;
+    --text-secondary: #666666;
     --color-x: #ef4444;
     --color-o: #3b82f6;
-    --board-bg: #000000;
-    --cell-bg: #2a2a2a;
-    --cell-border: #404040;
-    --cell-hover: #3a3a3a;
-    --shadow: rgba(0, 0, 0, 0.8);
+    --board-bg: #333333;
+    --cell-bg: #f5f5f5;
+    --cell-border: #dddddd;
+    --cell-hover: #e0e0e0;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --particle-color: 255, 255, 255;
+}
+
+/* NIGHT BLACK (SPACE) THEME */
+body.theme-night {
+    --bg-gradient-start: #0b0d1a;
+    --bg-gradient-end: #1a1e35;
+    --container-bg: #11131e;
+    --text-primary: #e0e7ff;
+    --text-secondary: #9fa8c8;
+    --color-x: #ff6b6b;
+    --color-o: #6bffb9;
+    --board-bg: #05060e;
+    --cell-bg: #191c2b;
+    --cell-border: #2e324d;
+    --cell-hover: #262b45;
+    --shadow: rgba(0, 0, 0, 0.7);
+    --particle-color: 100, 120, 200;
+}
+
+/* NIGHT BLACK DARK MODE (same as night) */
+body.theme-night.dark-mode {
+    --bg-gradient-start: #0b0d1a;
+    --bg-gradient-end: #1a1e35;
+    --container-bg: #11131e;
+    --text-primary: #e0e7ff;
+    --text-secondary: #9fa8c8;
+    --color-x: #ff6b6b;
+    --color-o: #6bffb9;
+    --board-bg: #05060e;
+    --cell-bg: #191c2b;
+    --cell-border: #2e324d;
+    --cell-hover: #262b45;
+    --shadow: rgba(0, 0, 0, 0.7);
+    --particle-color: 100, 120, 200;
+}
+
+/* CYBERPUNK NEON THEME */
+body.theme-cyberpunk {
+    --bg-gradient-start: #080010;
+    --bg-gradient-end: #1d0034;
+    --container-bg: #0d001a;
+    --text-primary: #00ffff;
+    --text-secondary: #ff00ff;
+    --color-x: #ff007f;
+    --color-o: #00ffff;
+    --board-bg: #05000a;
+    --cell-bg: #140026;
+    --cell-border: #ff007f;
+    --cell-hover: #260047;
+    --shadow: rgba(255, 0, 127, 0.4);
+    --particle-color: 255, 0, 255;
+}
+
+/* CYBERPUNK DARK MODE */
+body.theme-cyberpunk.dark-mode {
+    --bg-gradient-start: #020005;
+    --bg-gradient-end: #0a0015;
+    --container-bg: #05000a;
+    --text-primary: #00fffa;
+    --text-secondary: #ff00ff;
+    --board-bg: #020004;
+    --cell-bg: #0a0015;
+    --cell-border: #ff1ab5;
+    --cell-hover: #260060;
+    --shadow: rgba(255, 0, 127, 0.6);
+    --particle-color: 255, 0, 150;
+}
+
+body.theme-cyberpunk .mini-cell.x {
+    text-shadow: 0 0 8px #ff007f, 0 0 15px rgba(255, 0, 127, 0.5);
+}
+
+body.theme-cyberpunk .mini-cell.o {
+    text-shadow: 0 0 8px #00ffff, 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+body.theme-cyberpunk .container {
+    border: 2px solid #ff007f;
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.2), inset 0 0 15px rgba(255, 0, 127, 0.05);
+}
+
+body.theme-cyberpunk h1 {
+    text-shadow: 0 0 10px #00ffff;
+}
+
+/* DEEP OCEAN THEME */
+body.theme-ocean {
+    --bg-gradient-start: #0b1d33;
+    --bg-gradient-end: #1c3d5a;
+    --container-bg: #112233;
+    --text-primary: #e2f1f8;
+    --text-secondary: #80a3c2;
+    --color-x: #ff6b6b;
+    --color-o: #4ecdc4;
+    --board-bg: #07111a;
+    --cell-bg: #1b2e3c;
+    --cell-border: #2c4a5e;
+    --cell-hover: #233c4f;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --particle-color: 78, 205, 196;
+}
+
+/* DEEP OCEAN DARK MODE */
+body.theme-ocean.dark-mode {
+    --bg-gradient-start: #010a15;
+    --bg-gradient-end: #122c45;
+    --container-bg: #091527;
+    --text-primary: #cdeff5;
+    --text-secondary: #5a7d90;
+    --board-bg: #050c12;
+    --cell-bg: #162b38;
+    --cell-border: #1e3e58;
+    --cell-hover: #1a2e40;
+    --shadow: rgba(0, 0, 0, 0.6);
+    --particle-color: 60, 150, 130;
+}
+
+/* ROYAL GOLD THEME */
+body.theme-gold {
+    --bg-gradient-start: #141414;
+    --bg-gradient-end: #030303;
+    --container-bg: #1a1a1a;
+    --text-primary: #d4af37;
+    --text-secondary: #b5a478;
+    --color-x: #f3cf65;
+    --color-o: #ffffff;
+    --board-bg: #090909;
+    --cell-bg: #262626;
+    --cell-border: #3d3d3d;
+    --cell-hover: #333333;
+    --shadow: rgba(212, 175, 55, 0.15);
+    --particle-color: 212, 175, 55;
+}
+
+/* ROYAL GOLD DARK MODE */
+body.theme-gold.dark-mode {
+    --bg-gradient-start: #0c0c0c;
+    --bg-gradient-end: #010101;
+    --container-bg: #141414;
+    --text-primary: #e5c75f;
+    --text-secondary: #b5a478;
+    --board-bg: #080808;
+    --cell-bg: #2b2b2b;
+    --cell-border: #4a4a4a;
+    --cell-hover: #404040;
+    --shadow: rgba(212, 175, 55, 0.3);
+    --particle-color: 212, 175, 55;
+}
+
+body.theme-gold .container {
+    border: 1px solid #d4af37;
+    box-shadow: 0 10px 45px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.08);
+}
+
+body.theme-gold h1 {
+    background: linear-gradient(135deg, #f3cf65 0%, #d4af37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 html {
@@ -60,10 +221,14 @@ body {
     pointer-events: none;
 }
 
-.theme-toggle {
+.theme-menu-container {
     position: fixed;
     top: 1.5rem;
     right: 1.5rem;
+    z-index: 1000;
+}
+
+.theme-toggle-btn {
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -76,31 +241,73 @@ body {
     align-items: center;
     font-size: 1.5rem;
     transition: all 0.3s ease;
-    z-index: 1000;
 }
 
-.theme-toggle:hover {
+.theme-toggle-btn:hover {
     transform: scale(1.1) rotate(15deg);
 }
 
-.theme-toggle:active {
+.theme-toggle-btn:active {
     transform: scale(0.95);
 }
 
-.sun-icon {
-    display: block;
+.theme-dropdown {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background: var(--container-bg);
+    border: 2px solid var(--cell-border);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px var(--shadow);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 220px;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
 }
 
-.moon-icon {
-    display: none;
+.theme-dropdown.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
-body.dark-mode .sun-icon {
-    display: none;
+.theme-opt {
+    background: none;
+    border: none;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 550;
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
 }
 
-body.dark-mode .moon-icon {
-    display: block;
+.theme-opt:hover {
+    background: var(--cell-hover);
+    transform: translateX(3px);
+}
+
+.theme-opt.active {
+    background: #667eea;
+    color: white;
+}
+
+.theme-divider {
+    border: none;
+    border-top: 2px solid var(--cell-border);
+    margin: 0.4rem 0;
 }
 
 .container {
@@ -131,6 +338,34 @@ h1 {
     font-weight: bold;
     margin-bottom: 0.5rem;
     transition: color 0.3s ease;
+}
+
+.ai-thinking {
+    font-size: 0.9rem;
+    color: var(--color-o);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.ai-thinking.visible {
+    opacity: 1;
+}
+
+.ai-thinking::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: var(--color-o);
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
 }
 
 .instructions {
@@ -185,6 +420,7 @@ h1 {
     padding: 12px;
     border-radius: 1rem;
     transition: background 0.3s ease;
+    position: relative;
 }
 
 .mini-board {
@@ -318,21 +554,227 @@ h1 {
 }
 
 .winner-message {
-    background: white;
+    background: var(--container-bg);
+    color: var(--text-primary);
     padding: 3rem;
     border-radius: 1rem;
     text-align: center;
+    box-shadow: 0 10px 40px var(--shadow);
 }
 
 .winner-message h2 {
     font-size: 2.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     color: var(--color-x);
 }
+
+/* Last Move Highlights */
+.mini-cell.last-move {
+    box-shadow: inset 0 0 0 3px #667eea;
+    animation: pulse-highlight 2s infinite ease-in-out;
+}
+
+@keyframes pulse-highlight {
+    0% { box-shadow: inset 0 0 0 3px rgba(102, 126, 234, 0.4); }
+    50% { box-shadow: inset 0 0 0 3px rgba(102, 126, 234, 1); }
+    100% { box-shadow: inset 0 0 0 3px rgba(102, 126, 234, 0.4); }
+}
+
+/* Controls Wrapper & Buttons */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.control-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    background: var(--cell-bg);
+    color: var(--text-primary);
+    border: 2px solid var(--cell-border);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.control-btn:hover:not(:disabled) {
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.control-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Floating Rules Tooltip Modal */
+.rules-toggle {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: var(--container-bg);
+    box-shadow: 0 4px 15px var(--shadow);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.rules-toggle:hover {
+    transform: scale(1.1) rotate(-15deg);
+}
+
+.rules-toggle:active {
+    transform: scale(0.95);
+}
+
+.rules-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.rules-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.rules-content {
+    background: var(--container-bg);
+    color: var(--text-primary);
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 50px var(--shadow);
+    transform: scale(0.85);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rules-overlay.active .rules-content {
+    transform: scale(1);
+}
+
+.rules-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.rules-close:hover {
+    color: var(--color-x);
+}
+
+.rules-content h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.rules-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    text-align: left;
+}
+
+.rule-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.rule-icon {
+    font-size: 1.75rem;
+    background: var(--cell-bg);
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--cell-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 45px;
+    height: 45px;
+}
+
+.rule-text h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.rule-text p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+// Dark mode toggle within dropdown – now toggles between Night (dark) and Classic (light) themes
+darkModeToggle.addEventListener('click', () => {
+    playSound('click');
+    // Determine current theme
+    const isNight = document.body.classList.contains('theme-night');
+    if (isNight) {
+        setTheme('classic');
+    } else {
+        setTheme('night');
+    }
+    // Persist theme (setTheme already stores it)
+});
 
 @media (max-width: 768px) {
     body {
         padding: 0.5rem;
+    }
+    
+    // Initialize saved theme – default to Night (dark) if none set
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.classList.add(`theme-${savedTheme}`);
+        } else {
+            // Default to night theme (dark)
+            document.body.classList.add('theme-night');
+            localStorage.setItem('theme', 'night');
+        }
+        // No separate dark-mode handling needed – theme itself defines darkness
     }
     
     .container {
@@ -405,12 +847,29 @@ h1 {
         font-size: 0.9rem;
     }
     
-    .theme-toggle {
+    .theme-toggle-btn {
         width: 50px;
         height: 50px;
         font-size: 1.2rem;
         top: 0.75rem;
         right: 0.75rem;
+    }
+
+    .rules-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        top: 0.75rem;
+        left: 0.75rem;
+    }
+
+    .controls {
+        gap: 0.5rem;
+    }
+
+    .control-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -459,12 +918,25 @@ h1 {
         font-size: 0.85rem;
     }
     
-    .theme-toggle {
+    .theme-toggle-btn {
         width: 45px;
         height: 45px;
         font-size: 1.1rem;
         top: 0.5rem;
         right: 0.5rem;
+    }
+
+    .rules-toggle {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+        top: 0.5rem;
+        left: 0.5rem;
+    }
+
+    .control-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -486,4 +958,20 @@ h1 {
     .mini-board.won {
         font-size: 1.8rem;
     }
+}
+
+
+/* General dark mode - applies to all themes */
+body.dark-mode {
+    --bg-gradient-start: #000000;
+    --bg-gradient-end: #1a1a1a;
+    --container-bg: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --board-bg: #000000;
+    --cell-bg: #2a2a2a;
+    --cell-border: #404040;
+    --cell-hover: #3a3a3a;
+    --shadow: rgba(0, 0, 0, 0.8);
+    --particle-color: 200, 200, 200;
 }

@@ -1,8 +1,7 @@
-# super-tictactoe
+# Super Tic-Tac-Toe
 Web version of Super Tic-Tac-Toe, a type of Tic-Tac-Toe representing nine Tic-Tac-Toe's in the single Tic-Tac-Toe board!
 
-**Website Link**:
-https://velo4705.github.io/super-tictactoe
+🔗 **Play the game:** https://velo4705.github.io/super-tictactoe
 
 ## How it works
 - You have been given a single Tic-Tac-Toe board consisting of nine Tic-Tac-Toe's for you to solve.
@@ -11,5 +10,14 @@ https://velo4705.github.io/super-tictactoe
 - This Game shows strategic play on which cell you are trying to complete on, to gain the upper hand.
 
 ## Inspiration
-- A Simple Tic-Tac-Toe and an Idea from one of VSauce's videos of how the Super Tic-Tac-Toe is played, led me to create this version specifically for the Web.
+A Simple Tic-Tac-Toe and an Idea from one of VSauce's videos of how the Super Tic-Tac-Toe is played, led me to create this version specifically for the Web.
+
+## Features
+- Human vs Computer with 3 difficulty levels (Easy, Medium, Hard)
+- Dark mode toggle with black theme
+- X = Red, O = Blue
+- Draw detection on main board
+- Animated particle/constellation background
+- Mobile responsive design
+- Star on GitHub button with live count
 
