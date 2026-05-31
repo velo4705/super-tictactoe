@@ -50,9 +50,9 @@ The roadmap is divided into **short-term**, **medium-term**, and **long-term** g
 
 ### **UI/UX Improvements**
 - [X] **Custom Themes**: Allow users to customize colors or choose from predefined themes.
-- [ ] **Responsive Design Tweaks**: Improve touch targets for mobile devices.
+- [X] **Responsive Design Tweaks**: Improve touch targets for mobile devices.
 - [x] **Game Rules Tooltip**: Add a "?" icon to explain the rules of Super Tic-Tac-Toe.
-- [ ] **Share Game Results**: Add a "Share" button to post game results on social media.
+- [X] **Share Game Results**: Add a "Share" button to post game results on social media.
 
 ---
 

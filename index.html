@@ -9,19 +9,69 @@
 </head>
 <body>
     <canvas id="particles"></canvas>
-    <button class="rules-toggle" id="rulesToggle" aria-label="Show game rules">❓</button>
     <div class="theme-menu-container">
+        <button class="rules-toggle" id="rulesToggle" aria-label="Show game rules">❓</button>
         <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Choose theme">🎨</button>
         <div class="theme-dropdown" id="themeDropdown">
-            <button class="theme-opt" data-theme="classic">🟣 Classic Amethyst</button>
-            <button class="theme-opt" data-theme="cyberpunk">👾 Cyberpunk Neon</button>
-            <button class="theme-opt" data-theme="ocean">🌊 Deep Ocean</button>
-            <button class="theme-opt" data-theme="gold">👑 Royal Gold</button>
-            <hr class="theme-divider">
-            <button class="theme-opt" id="lightModeBtn">☀️ Light Mode</button>
-            <button class="theme-opt" id="darkModeBtn">🌙 Dark Mode</button>
+            <div class="theme-popup">
+                <button class="theme-opt" data-theme="classic">🟣 Classic Amethyst</button>
+                <button class="theme-opt" data-theme="cyberpunk">👾 Cyberpunk Neon</button>
+                <button class="theme-opt" data-theme="ocean">🌊 Deep Ocean</button>
+                <button class="theme-opt" data-theme="gold">👑 Royal Gold</button>
+                <button class="theme-opt" data-theme="forest">🌲 Forest</button>
+                <button class="theme-opt" data-theme="sunset">🌅 Sunset</button>
+                <button class="theme-opt" data-theme="hacker">💚 Hacker</button>
+                <button class="theme-opt" data-theme="sakura">🌸 Sakura</button>
+                <button class="theme-opt" data-theme="bliss">☀️ Bliss</button>
+                <hr class="theme-divider">
+                <button class="theme-opt" id="lightModeBtn">☀️ Light Mode</button>
+                <button class="theme-opt" id="darkModeBtn">🌙 Dark Mode</button>
+            </div>
         </div>
     </div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-label">Player</div>
+            <span class="username" id="usernameDisplay">Player</span>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Score</div>
+                    <div class="score" id="scoreDisplay">
+                        <span id="scoreWins">0</span>
+                        <span class="score-dash">-</span>
+                        <span id="scoreLosses">0</span>
+                    </div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">vs</div>
+            <span class="opponent" id="opponentDisplay">Computer</span>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Mode</div>
+            <select id="matchMode">
+                <option value="single">vs Computer</option>
+                <option value="local">vs Friend</option>
+                <option value="public" disabled>Online Public</option>
+                <option value="private" disabled>Online Private</option>
+            </select>
+        </div>
+        <div class="sidebar-section" id="diffSection">
+            <div class="sidebar-label">Difficulty</div>
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div class="sidebar-controls">
+            <button class="reset-btn" id="resetBtn">New Game</button>
+            <div class="sidebar-undo-row">
+                <button class="control-btn" id="undoBtn" disabled>Undo</button>
+                <button class="control-btn" id="redoBtn" disabled>Redo</button>
+            </div>
+        </div>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle player info">☰</button>
     <div class="container">
         <h1>Super Tic-Tac-Toe</h1>
         <div class="info">
@@ -30,22 +80,8 @@
                 <div class="ai-thinking" id="aiThinking">🤖 Thinking...</div>
             </div>
             <div class="instructions">Win small boards to claim cells in the big board!</div>
-            <div class="difficulty-selector">
-                <label for="difficulty">Difficulty:</label>
-                <select id="difficulty">
-                    <option value="easy">Easy</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
         </div>
         <div class="main-board" id="mainBoard"></div>
-        <div class="controls">
-            <button class="reset-btn" id="resetBtn">New Game</button>
-            <button class="control-btn" id="undoBtn" disabled>Undo</button>
-            <button class="control-btn" id="redoBtn" disabled>Redo</button>
-            <button class="control-btn" id="modeToggle">Pass-and-Play</button>
-        </div>
     </div>
 
     <!-- Rules Modal Overlay -->

@@ -14,10 +14,22 @@ A Simple Tic-Tac-Toe and an Idea from one of VSauce's videos of how the Super Ti
 
 ## Features
 - Human vs Computer with 3 difficulty levels (Easy, Medium, Hard)
-- Dark mode toggle with black theme
-- X = Red, O = Blue
-- Draw detection on main board
-- Animated particle/constellation background
-- Mobile responsive design
+- Pass-and-Play local multiplayer (vs Friend)
+- Online modes stubbed (coming soon)
+- 10 handcrafted themes with light/dark variants (Classic, Night, Cyberpunk, Ocean, Gold, Forest, Sunset, Hacker, Sakura, Bliss)
+- Theme selector popup with backdrop blur
+- Persistent username system (click-to-edit, random unique generation)
+- Win/loss score tracking per username (localStorage)
+- Score resets on mode change
+- Undo/Redo with full move history
+- Animated SVG winning lines on mini-boards and main board
+- Last-move highlight
+- Sound effects via Web Audio API (move, win, lose, click)
+- Share button on win/draw overlay (Web Share API / clipboard fallback)
+- Animated particle/constellation background (theme-aware colors)
+- Dynamic board sizing (adapts to any viewport, no fixed breakpoints)
+- Slide-in sidebar on mobile (player info, controls)
+- Rules modal with step-by-step instructions
+- Mobile responsive with 44px minimum touch targets
 - Star on GitHub button with live count
 
