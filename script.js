@@ -1252,21 +1252,6 @@ function updateOpponentDisplay() {
     }
 }
 
-// Sidebar toggle (mobile)
-const sidebarToggle = document.getElementById('sidebarToggle');
-const sidebar = document.getElementById('sidebar');
-
-if (sidebarToggle && sidebar) {
-    sidebarToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-    });
-    document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768 && sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== sidebarToggle) {
-            sidebar.classList.remove('open');
-        }
-    });
-}
-
 // Score system
 function loadScores() {
     const key = `scores_${currentUsername}`;
@@ -1310,7 +1295,7 @@ matchMode.addEventListener('change', () => {
     if (diffSection) {
         diffSection.style.display = mode === 'single' ? '' : 'none';
     }
-    const controls = document.querySelector('.sidebar-controls');
+    const controls = document.querySelector('.panel-controls');
     if (controls) {
         controls.style.display = mode === 'single' ? '' : 'none';
     }
@@ -1326,7 +1311,7 @@ function initMatchMode() {
     if (diffSection) {
         diffSection.style.display = saved === 'single' ? '' : 'none';
     }
-    const controls = document.querySelector('.sidebar-controls');
+    const controls = document.querySelector('.panel-controls');
     if (controls) {
         controls.style.display = saved === 'single' ? '' : 'none';
     }
@@ -1381,31 +1366,54 @@ function resizeBoard() {
     const board = document.getElementById('mainBoard');
     if (!board) return;
 
+    const splitLayout = board.closest('.split-layout');
+    const panelLeft = splitLayout ? splitLayout.querySelector('.panel-left') : null;
+    if (panelLeft) {
+        panelLeft.style.maxHeight = '';
+    }
+
+    // Force reflow so measurements reflect cleared constraints
+    void document.body.offsetHeight;
+
+    const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    // Measure available width from the container
+    const bodyPadH = parseFloat(getComputedStyle(document.body).paddingLeft) * 2 || 32;
     const container = board.closest('.container');
-    let availW = window.innerWidth - 32;
-    if (container) {
-        availW = container.clientWidth;
+    const containerPadH = container ? parseFloat(getComputedStyle(container).paddingLeft) + parseFloat(getComputedStyle(container).paddingRight) : 32;
+
+    // Available width: viewport minus paddings, minus left panel + divider
+    const viewportW = vw - bodyPadH - containerPadH - 8;
+    let availW = viewportW;
+    const panelRight = board.closest('.panel-right');
+    if (splitLayout) {
+        const panelLeftWidth = panelLeft ? panelLeft.getBoundingClientRect().width : 220;
+        const divider = splitLayout.querySelector('.panel-divider');
+        const dividerW = divider ? divider.getBoundingClientRect().width : 2;
+        availW = viewportW - panelLeftWidth - dividerW - 16;
+    } else if (container) {
+        availW = Math.min(container.clientWidth - containerPadH, viewportW);
     }
 
     const desktopMax = 580;
 
     let boardPx = Math.min(availW, desktopMax);
 
-    if (vh < 600) {
-        const h1 = document.querySelector('h1');
-        const info = document.querySelector('.info');
-        const controls = document.querySelector('.controls');
-        const h1h = h1 ? h1.getBoundingClientRect().height : 0;
-        const infoh = info ? info.getBoundingClientRect().height : 0;
-        const controlsh = controls ? controls.getBoundingClientRect().height : 0;
-        const container = board.closest('.container');
-        const bodyPadV = parseFloat(getComputedStyle(document.body).paddingTop) * 2 || 64;
-        const containerPadV = container ? parseFloat(getComputedStyle(container).paddingTop) * 2 || 64 : 64;
-        const overhead = h1h + infoh + controlsh + bodyPadV + containerPadV + 24;
-        const maxH = vh - overhead;
+    const bodyPadV = parseFloat(getComputedStyle(document.body).paddingTop) * 2 || 32;
+    const containerPadV = container ? parseFloat(getComputedStyle(container).paddingTop) + parseFloat(getComputedStyle(container).paddingBottom) : 32;
+
+    const isVertical = splitLayout && getComputedStyle(splitLayout).flexDirection === 'column';
+
+    if (isVertical) {
+        // Mobile stacked: constrain by remaining height after left panel
+        const divider = splitLayout.querySelector('.panel-divider');
+        const leftH = panelLeft ? panelLeft.getBoundingClientRect().height : 0;
+        const dividerH = divider ? divider.getBoundingClientRect().height : 0;
+        const maxH = vh - bodyPadV - containerPadV - leftH - dividerH - 16;
+        boardPx = Math.min(boardPx, Math.max(maxH, 120));
+    } else {
+        // Desktop side-by-side: constrain by viewport height
+        const maxH = vh - bodyPadV - containerPadV - 24;
         boardPx = Math.min(boardPx, Math.max(maxH, 200));
     }
 
@@ -1426,6 +1434,12 @@ function resizeBoard() {
     board.style.setProperty('--cell-gap', `${cellGap}px`);
     board.style.setProperty('--cell-font-size', `${fontSize}px`);
     board.style.setProperty('--won-font-size', `${wonSize}px`);
+
+    if (!isVertical && panelRight && panelLeft) {
+        panelLeft.style.maxHeight = `${boardPx}px`;
+    } else if (panelLeft) {
+        panelLeft.style.maxHeight = '';
+    }
 }
 
 // Particle animation
