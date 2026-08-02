@@ -137,6 +137,7 @@ body.theme-cyberpunk h1 {
     text-shadow: none;
     background: linear-gradient(135deg, #d61f69 0%, #0d9488 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -144,6 +145,7 @@ body.theme-cyberpunk.dark-mode h1 {
     text-shadow: 0 0 10px #00ffff;
     background: none;
     -webkit-background-clip: unset;
+    background-clip: unset;
     -webkit-text-fill-color: unset;
 }
 
@@ -226,12 +228,14 @@ body.theme-gold.dark-mode .container {
 body.theme-gold h1 {
     background: linear-gradient(135deg, #8a3a00 0%, #b8860b 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 body.theme-gold.dark-mode h1 {
     background: linear-gradient(135deg, #f3cf65 0%, #d4af37 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -1213,6 +1217,7 @@ h1 {
     text-align: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
